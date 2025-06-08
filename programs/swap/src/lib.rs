@@ -15,14 +15,18 @@ declare_id!("G4YseZt1Amq3H1bbATVA2R17XNKvUxvZgZcje6eges7g");
 pub mod swap {
     use super::*;
 
-    pub fn make_offer(ctx: Context<MakeOffer>) -> Result<()> {
-        instructions::make_offer::send_offered_tokens_to_vault()?;
-        instructions::make_offer::save_offer();
+    pub fn make_offer(
+        context: Context<MakeOffer>,
+        id: u64,
+        token_a_offered_amount: u64,
+        token_b_wanted_amount: u64,
+    ) -> Result<()> {
+        instructions::make_offer::send_offered_tokens_to_vault(&context, token_a_offered_amount)?;
+        instructions::make_offer::save_offer(context, id, token_b_wanted_amount)
     }
-}
 
-
-
-#[account]
-pub struct MakeOffer {
+    pub fn take_offer(ctx: Context<TakeOffer>) -> Result<()> {
+        instructions::take_offer::send_wanted_tokens_to_maker(&ctx)?;
+        instructions::take_offer::withdraw_and_close_vault(ctx)
+    }
 }
